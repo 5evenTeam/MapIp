@@ -1,12 +1,0 @@
-[?25l[?1049h[2J[H[?25l[?2004h[HMapIp  network host mapper  (TUI)
-Maps hosts on your own network. Does not geolocate IP addresses.
-
-targets  127.0.0.1
-
-············
-
-IP               HOSTNAME             MAC                VENDOR             PORTS
-  no hosts found yet
-
- ready — press s to scan 127.0.0.1 
-[s] scan  [w] watch:off  [tab] devices  [/] filter  [e/c/x] export  [h] help  [q] quit[12;H
