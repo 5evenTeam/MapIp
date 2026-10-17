@@ -101,6 +101,18 @@ func probeHost(ctx context.Context, ip string, opts Options) (model.Host, bool) 
 			host.MAC = mac
 			host.Vendor = oui.Lookup(mac)
 		}
+		if name := enrich.NetBIOSName(ip, opts.Timeout); name != "" {
+			host.Names.NetBIOS = name
+		}
+		if name := enrich.MDNSName(ip, opts.Timeout); name != "" {
+			host.Names.MDNS = name
+		}
+		if name := enrich.LLMNRName(ip, opts.Timeout); name != "" {
+			host.Names.LLMNR = name
+		}
+		if host.Hostname == "" {
+			host.Hostname = firstNonEmpty(host.Names.MDNS, host.Names.NetBIOS, host.Names.LLMNR)
+		}
 	}
 
 	if opts.PortScan {
@@ -122,6 +134,10 @@ func probeHost(ctx context.Context, ip string, opts Options) (model.Host, bool) 
 			}
 		}
 	}
+
+	now := time.Now()
+	host.FirstSeen = now
+	host.LastSeen = now
 	return host, true
 }
 
@@ -163,4 +179,13 @@ func ipBytes(s string) []byte {
 	}
 	out = append(out, byte(n))
 	return out
+}
+
+func firstNonEmpty(values ...string) string {
+	for _, v := range values {
+		if v != "" {
+			return v
+		}
+	}
+	return ""
 }

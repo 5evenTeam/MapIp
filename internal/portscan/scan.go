@@ -67,11 +67,11 @@ func probe(ctx context.Context, ip string, port int, opts Options) (model.Port, 
 	}
 	defer conn.Close()
 
-	p := model.Port{Port: port, Proto: "tcp", State: "open", Service: guessService(port)}
+	p := model.Port{Port: port, Proto: "tcp", State: "open", Service: GuessService(port)}
 	if opts.Banners {
 		banner := grabBanner(conn, opts.Timeout)
 		p.Banner = banner
-		if detected := detectFromBanner(port, banner); detected != "" {
+		if detected := detectProtocol(banner); detected != "" {
 			p.Service = detected
 		}
 	}
@@ -104,7 +104,7 @@ func cleanBanner(s string) string {
 	return strings.TrimSpace(s)
 }
 
-func guessService(port int) string {
+func GuessService(port int) string {
 	switch port {
 	case 21:
 		return "ftp"
@@ -160,7 +160,7 @@ func guessService(port int) string {
 	return ""
 }
 
-func detectFromBanner(port int, banner string) string {
+func detectProtocol(banner string) string {
 	if banner == "" {
 		return ""
 	}
@@ -168,16 +168,16 @@ func detectFromBanner(port int, banner string) string {
 	switch {
 	case strings.HasPrefix(low, "ssh-"):
 		return "ssh"
-	case strings.Contains(low, "server:") && strings.Contains(low, "http"):
-		return "http"
-	case strings.Contains(low, "http/1."):
-		return "http"
-	case strings.Contains(low, "smtp"):
+	case strings.HasPrefix(low, "-err") || strings.HasPrefix(low, "$") || strings.Contains(low, "-err unknown command"):
+		return "redis"
+	case strings.Contains(low, "esmtp") || strings.Contains(low, "smtp"):
 		return "smtp"
 	case strings.Contains(low, "ftp"):
 		return "ftp"
-	case strings.Contains(low, "-err"):
-		return "redis"
+	case strings.HasPrefix(low, "+ok"):
+		return "pop3"
+	case strings.HasPrefix(low, "* ok"):
+		return "imap"
 	}
 	return ""
 }
