@@ -8,4 +8,7 @@ desktop/dist/
 *.log
 .DS_Store
 Thumbs.db
+internal/oui/data/*.tsv
+!internal/oui/data/oui.tsv
+internal/oui/data/
 EOF
