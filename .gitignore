@@ -1,0 +1,11 @@
+mapip.exe
+mapip
+*.exe
+build/
+dist/
+desktop/node_modules/
+desktop/dist/
+*.log
+.DS_Store
+Thumbs.db
+EOF
