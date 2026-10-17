@@ -86,7 +86,6 @@ export default function App() {
   const stopStreamRef = useRef<(() => void) | null>(null)
   const watchTimerRef = useRef<number | null>(null)
 
-  // poll for the core process to come online
   useEffect(() => {
     let alive = true
     const timer = window.setInterval(async () => {
@@ -109,7 +108,6 @@ export default function App() {
     }
   }, [])
 
-  // load interfaces once the core is ready
   useEffect(() => {
     if (!coreReady || !core) return
     api
@@ -181,7 +179,7 @@ export default function App() {
               break
             case 'done':
               setScanning(false)
-              setStatus(`done — ${hosts.length || started.total} hosts`)
+              setStatus(`done — ${event.total || 0} host(s) up`)
               void api.getDiff(core).then((r) => setChanges(r.changes || []))
               break
           }
@@ -204,7 +202,6 @@ export default function App() {
       try {
         await api.cancelScan(core, scanId)
       } catch {
-        // ignore
       }
     }
     stopStream()
@@ -238,7 +235,6 @@ export default function App() {
 
   const selected = useMemo(() => hosts.find((h) => h.ip === selectedIp) || null, [hosts, selectedIp])
 
-  // watch mode
   useEffect(() => {
     if (!watchEnabled || !coreReady) {
       if (watchTimerRef.current) {
@@ -326,7 +322,7 @@ export default function App() {
           />
         </div>
         {!scanning ? (
-          <button className="primary" onClick={() => void runScan()} disabled={!coreReady}>
+          <button className="primary" onClick={() => void runScan()} disabled={!coreReady || (!target.trim() && !primaryCidr)}>
             Scan
           </button>
         ) : (

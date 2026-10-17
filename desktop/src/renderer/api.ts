@@ -129,7 +129,6 @@ export function streamScan(
     try {
       onEvent(JSON.parse(message.data) as ScanEvent)
     } catch {
-      // malformed frames are ignored; the stream stays open
     }
   }
   source.onerror = () => {
