@@ -1,5 +1,5 @@
-mapip
-mapip.exe
+/mapip
+/mapip.exe
 *.exe
 
 build/
@@ -26,4 +26,5 @@ eb.out
 eb.err
 el.out
 el.err
+
 
