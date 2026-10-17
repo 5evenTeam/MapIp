@@ -3,18 +3,19 @@
   "version": "0.1.0",
   "description": "MapIp Desktop — network host mapper (NOT geolocation)",
   "main": "dist/main.js",
+  "author": "5evenTeam",
   "scripts": {
     "dev": "tsc --project tsconfig.main.json && vite build && electron .",
     "build:main": "tsc --project tsconfig.main.json",
     "build:renderer": "vite build",
     "build": "npm run build:main && npm run build:renderer",
     "start": "npm run build:main && electron .",
-    "dist": "npm run build && electron-builder --dir"
+    "dist": "npm run build && electron-builder",
+    "dist:dir": "npm run build && electron-builder --dir"
   },
   "dependencies": {
     "react": "^19.1.1",
-    "react-dom": "^19.1.1",
-    "eventsource": "^4.0.0"
+    "react-dom": "^19.1.1"
   },
   "devDependencies": {
     "@types/react": "^19.1.14",
@@ -35,6 +36,22 @@
     "files": [
       "dist/**/*",
       "package.json"
-    ]
+    ],
+    "extraResources": [
+      {
+        "from": "../mapip.exe",
+        "to": "mapip.exe"
+      }
+    ],
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "MapIp"
+    },
+    "win": {
+      "target": "nsis"
+    }
   }
 }

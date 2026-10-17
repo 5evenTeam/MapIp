@@ -10,13 +10,14 @@ let coreToken: string | null = null
 
 function findCore() {
   const candidates = [
+    join(process.resourcesPath || '', 'mapip.exe'),
     join(process.cwd(), 'mapip.exe'),
     join(process.cwd(), '../mapip.exe'),
     join(__dirname, 'mapip.exe'),
     join(__dirname, '../mapip.exe'),
   ]
   for (const c of candidates) {
-    if (existsSync(c)) return c
+    if (c && existsSync(c)) return c
   }
   return 'mapip'
 }
