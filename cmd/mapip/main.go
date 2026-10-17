@@ -1,58 +1,67 @@
 package main
 
 import (
-	"flag"
 	"fmt"
-	"strings"
-	"time"
-
-	"github.com/5evenTeam/mapip/internal/discovery"
-	"github.com/5evenTeam/mapip/internal/netutil"
+	"os"
 )
 
-var (
-	targets   string
-	timeoutms int
-	ports     string
-)
+const version = "0.1.0"
+
+const disclaimer = "MapIp maps the hosts on your own network. It does not geolocate IP addresses."
 
 func main() {
-	flag.StringVar(&targets, "t", "127.0.0.1", "targets: CIDR/range/list")
-	flag.IntVar(&timeoutms, "T", 1000, "timeout ms")
-	flag.StringVar(&ports, "p", "80,443,22,3389,445,53,139", "tcp ports")
-	ui := flag.Bool("ui", false, "launch TUI (bubbletea)")
-	flag.Parse()
-	if *ui {
-		runTUI()
+	args := os.Args[1:]
+	if len(args) == 0 {
+		usage()
 		return
 	}
-	list, _ := netutil.ParseTargets(targets)
-	plist := parsePorts(ports)
-	fmt.Println("MapIp — network host mapper (NOT geolocation)")
-	fmt.Println("https://github.com/5evenTeam/mapip")
-	for _, ip := range list {
-		h, ok := discovery.TCPPing(ip, plist, time.Duration(timeoutms)*time.Millisecond)
-		if ok {
-			fmt.Printf("[%s] UP (rtt=%.1fms) open:%d\n", h.IP, h.RTTMs, len(h.Ports))
-			continue
-		}
-		fmt.Printf("[%s] DOWN/filtered (rtt=%.1fms)\n", h.IP, h.RTTMs)
+
+	switch args[0] {
+	case "scan":
+		cmdScan(args[1:])
+	case "serve":
+		cmdServe(args[1:])
+	case "tui", "ui":
+		cmdTUI(args[1:])
+	case "wol":
+		cmdWOL(args[1:])
+	case "interfaces", "ifaces":
+		cmdInterfaces(args[1:])
+	case "version", "--version", "-v":
+		fmt.Printf("mapip %s\n%s\n", version, disclaimer)
+	case "help", "--help", "-h":
+		usage()
+	default:
+		cmdScan(args)
 	}
 }
 
-func parsePorts(s string) []int {
-	parts := strings.FieldsFunc(s, func(r rune) bool { return r == ',' || r == ' ' })
-	var out []int
-	for _, p := range parts {
-		p = strings.TrimSpace(p)
-		if p == "" {
-			continue
-		}
-		var v int
-		fmt.Sscanf(p, "%d", &v)
-		if v > 0 && v < 65536 {
-			out = append(out, v)
-		}
-	}
-	return out
+func usage() {
+	fmt.Printf(`mapip %s — network host mapper
+
+%s
+
+Usage:
+  mapip scan [flags]            discover hosts and optionally scan ports
+  mapip tui                     interactive terminal UI
+  mapip serve [--addr HOST:PORT] start the local API for the desktop app
+  mapip wol <mac>               send a wake-on-lan magic packet
+  mapip interfaces              list local interfaces and the primary subnet
+
+Scan flags:
+  -t, --targets SPEC   CIDR, range, list or hostname (default: local subnet)
+  -p, --ports LIST     ports to scan when -ports is set
+      --port-scan      enable the TCP port scan
+      --no-enrich      skip reverse DNS and MAC/vendor lookup
+  -T, --timeout MS     per-probe timeout in milliseconds (default 1200)
+  -o, --output FILE    write a report to FILE
+      --format FMT     table, json, csv, html or xml (default table)
+
+Examples:
+  mapip scan
+  mapip scan -t 192.168.1.0/24 --port-scan
+  mapip scan -t 10.0.0.1-10.0.0.50 --format json -o hosts.json
+
+No geolocation. No telemetry. No third-party IP lookup services.
+`, version, disclaimer)
 }

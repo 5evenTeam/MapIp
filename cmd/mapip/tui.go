@@ -1,37 +1,39 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"os"
+	"time"
 
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
+	"github.com/5evenTeam/mapip/internal/netutil"
+	"github.com/5evenTeam/mapip/internal/tui"
 )
 
-var banner = lipgloss.NewStyle().Foreground(lipgloss.Color("205")).Render("MapIp") + " — network host mapper (NOT geolocation)\nPress 'q' to quit\n"
+func cmdTUI(args []string) {
+	fs := flag.NewFlagSet("tui", flag.ExitOnError)
+	var spec string
+	var portsCSV string
+	var timeoutMs int
+	var portScan bool
 
-type model struct{}
+	fs.StringVar(&spec, "t", "", "targets: CIDR, range, list or hostname")
+	fs.StringVar(&spec, "targets", "", "targets: CIDR, range, list or hostname")
+	fs.StringVar(&portsCSV, "p", "", "comma-separated ports")
+	fs.StringVar(&portsCSV, "ports", "", "comma-separated ports")
+	fs.IntVar(&timeoutMs, "T", 1200, "per-probe timeout in ms")
+	fs.IntVar(&timeoutMs, "timeout", 1200, "per-probe timeout in ms")
+	fs.BoolVar(&portScan, "port-scan", false, "run the TCP port scan")
+	_ = fs.Parse(args)
 
-func (m model) Init() tea.Cmd { return nil }
-
-func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	switch msg := msg.(type) {
-	case tea.KeyMsg:
-		if msg.String() == "q" || msg.String() == "ctrl+c" {
-			return m, tea.Quit
+	if spec == "" {
+		if cidr, err := netutil.PrimaryLocalCIDR(); err == nil {
+			spec = cidr
 		}
 	}
-	return m, nil
-}
 
-func (m model) View() string {
-	return banner + "Run with -t to scan targets. This is a minimal TUI skeleton.\n"
-}
-
-func runTUI() {
-	p := tea.NewProgram(model{}, tea.WithAltScreen())
-	if _, err := p.Run(); err != nil {
-		fmt.Println("error:", err)
+	if err := tui.Run(spec, parsePorts(portsCSV), portScan, time.Duration(timeoutMs)*time.Millisecond); err != nil {
+		fmt.Fprintln(os.Stderr, "tui error:", err)
 		os.Exit(1)
 	}
 }

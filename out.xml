@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nmaprun scanner="mapip" args="mapip 127.0.0.1">
+  <host>
+    <status state="up"></status>
+    <address addr="127.0.0.1" addrtype="ipv4"></address>
+    <hostnames>
+      <hostname name="gen-webserver.internal" type="PTR"></hostname>
+    </hostnames>
+    <ports>
+      <port protocol="tcp" portid="135">
+        <state state="open" reason="syn-ack"></state>
+        <service name="msrpc"></service>
+      </port>
+      <port protocol="tcp" portid="445">
+        <state state="open" reason="syn-ack"></state>
+        <service name="microsoft-ds"></service>
+      </port>
+    </ports>
+  </host>
+</nmaprun>

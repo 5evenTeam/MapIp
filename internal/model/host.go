@@ -18,20 +18,20 @@ type Host struct {
 }
 
 type Port struct {
-	Port     int    `json:"port"`
-	Proto    string `json:"proto"`
-	State    string `json:"state"`
-	Service  string `json:"service"`
-	Banner   string `json:"banner"`
+	Port    int    `json:"port"`
+	Proto   string `json:"proto"`
+	State   string `json:"state"`
+	Service string `json:"service"`
+	Banner  string `json:"banner"`
 }
 
 type Names struct {
-	MDNS   string `json:"mdns"`
-	LLMNR  string `json:"llmnr"`
+	MDNS    string `json:"mdns"`
+	LLMNR   string `json:"llmnr"`
 	NetBIOS string `json:"netbios"`
-	SSDP   string `json:"ssdp"`
-	SNMP   string `json:"snmp"`
-	DHCP   string `json:"dhcp"`
+	SSDP    string `json:"ssdp"`
+	SNMP    string `json:"snmp"`
+	DHCP    string `json:"dhcp"`
 }
 
 type ScanReport struct {
