@@ -17,6 +17,7 @@ type Options struct {
 	Timeout     time.Duration
 	Concurrency int
 	Ports       []int
+	UdpPorts    []int
 	PortScan    bool
 	Enrich      bool
 	PingFirst   bool
@@ -116,12 +117,15 @@ func probeHost(ctx context.Context, ip string, opts Options) (model.Host, bool) 
 	}
 
 	if opts.PortScan {
-		ports := portscan.Scan(ctx, ip, portscan.Options{
-			Ports:       opts.Ports,
-			Timeout:     opts.Timeout,
-			Concurrency: 64,
-			Banners:     true,
-		})
+		ports := portscan.ScanViaNetBreak(ctx, ip, opts.Ports, opts.UdpPorts, opts.Timeout)
+		if ports == nil {
+			ports = portscan.Scan(ctx, ip, portscan.Options{
+				Ports:       opts.Ports,
+				Timeout:     opts.Timeout,
+				Concurrency: 64,
+				Banners:     true,
+			})
+		}
 		if len(ports) > 0 {
 			host.Ports = ports
 			for _, p := range ports {

@@ -12,8 +12,7 @@ const disclaimer = "MapIp maps the hosts on your own network. It does not geoloc
 func main() {
 	args := os.Args[1:]
 	if len(args) == 0 {
-		usage()
-		return
+		args = []string{"scan"}
 	}
 
 	switch args[0] {

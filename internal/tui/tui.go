@@ -33,6 +33,7 @@ var (
 	helpStyle   = lipgloss.NewStyle().Foreground(lipgloss.Color("244"))
 )
 
+type startScanMsg struct{}
 type progressMsg discovery.Progress
 type closedMsg struct {
 	count int
@@ -55,6 +56,7 @@ type resultBox struct {
 type Model struct {
 	targets  string
 	ports    []int
+	udpPorts []int
 	portScan bool
 	enrich   bool
 	timeout  time.Duration
@@ -105,6 +107,7 @@ func New(targets string, ports []int, portScan bool, timeout time.Duration) Mode
 		targets:       targets,
 		ports:         ports,
 		portScan:      portScan,
+		udpPorts:      []int{53, 123, 161},
 		enrich:        true,
 		timeout:       timeout,
 		seen:          map[string]bool{},
@@ -121,7 +124,7 @@ func Run(targets string, ports []int, portScan bool, timeout time.Duration) erro
 }
 
 func (m Model) Init() tea.Cmd {
-	return tea.Batch(tea.EnterAltScreen, func() tea.Msg { return nil })
+	return tea.Batch(tea.EnterAltScreen, func() tea.Msg { return startScanMsg{} })
 }
 
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -300,6 +303,7 @@ func (m *Model) startScan() tea.Cmd {
 		Timeout:     m.timeout,
 		Concurrency: 64,
 		Ports:       m.ports,
+		UdpPorts:    m.udpPorts,
 		PortScan:    m.portScan,
 		Enrich:      m.enrich,
 	}

@@ -22,6 +22,7 @@ func cmdScan(args []string) {
 	fs := flag.NewFlagSet("scan", flag.ExitOnError)
 	var spec string
 	var portsCSV string
+	var udpPortsCSV string
 	var timeoutMs int
 	var portScan bool
 	var noEnrich bool
@@ -33,6 +34,7 @@ func cmdScan(args []string) {
 	fs.StringVar(&spec, "targets", "", "targets: CIDR, range, list or hostname")
 	fs.StringVar(&portsCSV, "p", "", "comma-separated ports")
 	fs.StringVar(&portsCSV, "ports", "", "comma-separated ports")
+	fs.StringVar(&udpPortsCSV, "udp-ports", "", "comma-separated UDP ports (via NetBreak engine)")
 	fs.IntVar(&timeoutMs, "T", 1200, "per-probe timeout in ms")
 	fs.IntVar(&timeoutMs, "timeout", 1200, "per-probe timeout in ms")
 	fs.BoolVar(&portScan, "port-scan", false, "run the TCP port scan")
@@ -66,6 +68,7 @@ func cmdScan(args []string) {
 	if portScan && len(ports) == 0 {
 		ports = portscan.DefaultPorts()
 	}
+	udpPorts := parsePorts(udpPortsCSV)
 
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancel()
@@ -75,6 +78,7 @@ func cmdScan(args []string) {
 		Timeout:     time.Duration(timeoutMs) * time.Millisecond,
 		Concurrency: concurrency,
 		Ports:       ports,
+		UdpPorts:    udpPorts,
 		PortScan:    portScan,
 		Enrich:      !noEnrich,
 	}
