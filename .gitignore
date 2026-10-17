@@ -20,3 +20,10 @@ out.json
 *.log
 .DS_Store
 Thumbs.db
+
+# build logs
+eb.out
+eb.err
+el.out
+el.err
+
