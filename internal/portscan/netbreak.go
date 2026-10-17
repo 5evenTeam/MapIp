@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
 	"runtime"
 	"strconv"
 	"strings"
@@ -192,6 +193,54 @@ func guessServiceNB(port int, proto string) string {
 	return ""
 }
 
-func NetBreakAvailable() bool {
-	return findNetBreakEngine() != ""
+func DeepAvailable() bool {
+	// check if python can import netbreak
+	cmd := exec.Command("python", "-c", "import netbreak")
+	return cmd.Run() == nil
+}
+
+func ScanDeep(ctx context.Context, ip string, ports []int, timeout time.Duration) []model.Port {
+	if !DeepAvailable() {
+		return nil
+	}
+	if timeout <= 0 {
+		timeout = 5 * time.Second
+	}
+	spec := joinPorts(ports)
+	cmd := exec.CommandContext(ctx, "python", "-m", "netbreak", ip, "-p", spec, "-sV", "--timeout", fmtFloat(timeout.Seconds()))
+	out, err := cmd.Output()
+	if err != nil {
+		return nil
+	}
+	resultMap := map[int]model.Port{}
+	parseNetBreakText(out, resultMap)
+	result := make([]model.Port, 0, len(resultMap))
+	for _, p := range resultMap {
+		result = append(result, p)
+	}
+	sortPorts(result)
+	return result
+}
+
+func parseNetBreakText(data []byte, out map[int]model.Port) {
+	re := regexp.MustCompile(`^(\d+)/(tcp|udp)\s+(\S+)\s+(\S+)\s*(.*)$`)
+	for _, line := range strings.Split(string(data), "\n") {
+		line = strings.TrimSpace(line)
+		m := re.FindStringSubmatch(line)
+		if m == nil {
+			continue
+		}
+		port, _ := strconv.Atoi(m[1])
+		proto := m[2]
+		state := m[3]
+		service := m[4]
+		version := strings.TrimSpace(m[5])
+		out[port] = model.Port{
+			Port:    port,
+			Proto:   proto,
+			State:   state,
+			Service: service,
+			Version: version,
+		}
+	}
 }

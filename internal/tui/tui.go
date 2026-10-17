@@ -58,6 +58,7 @@ type Model struct {
 	ports    []int
 	udpPorts []int
 	portScan bool
+	deep     bool
 	enrich   bool
 	timeout  time.Duration
 
@@ -108,6 +109,7 @@ func New(targets string, ports []int, portScan bool, timeout time.Duration) Mode
 		ports:         ports,
 		portScan:      portScan,
 		udpPorts:      []int{53, 123, 161},
+		deep:          false,
 		enrich:        true,
 		timeout:       timeout,
 		seen:          map[string]bool{},
@@ -305,6 +307,7 @@ func (m *Model) startScan() tea.Cmd {
 		Ports:       m.ports,
 		UdpPorts:    m.udpPorts,
 		PortScan:    m.portScan,
+		Deep:        m.deep,
 		Enrich:      m.enrich,
 	}
 

@@ -22,6 +22,7 @@ type Port struct {
 	Proto   string `json:"proto"`
 	State   string `json:"state"`
 	Service string `json:"service"`
+	Version string `json:"version,omitempty"`
 	Banner  string `json:"banner"`
 }
 

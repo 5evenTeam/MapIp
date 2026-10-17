@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-const version = "0.1.0"
+const version = "0.2.0"
 
 const disclaimer = "MapIp maps the hosts on your own network. It does not geolocate IP addresses."
 

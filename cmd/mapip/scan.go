@@ -25,6 +25,7 @@ func cmdScan(args []string) {
 	var udpPortsCSV string
 	var timeoutMs int
 	var portScan bool
+	var deep bool
 	var noEnrich bool
 	var outFile string
 	var format string
@@ -38,6 +39,7 @@ func cmdScan(args []string) {
 	fs.IntVar(&timeoutMs, "T", 1200, "per-probe timeout in ms")
 	fs.IntVar(&timeoutMs, "timeout", 1200, "per-probe timeout in ms")
 	fs.BoolVar(&portScan, "port-scan", false, "run the TCP port scan")
+	fs.BoolVar(&deep, "deep", false, "service/version detection via NetBreak (requires Python+NetBreak)")
 	fs.BoolVar(&noEnrich, "no-enrich", false, "skip reverse DNS and vendor lookup")
 	fs.StringVar(&outFile, "o", "", "output file")
 	fs.StringVar(&outFile, "output", "", "output file")
@@ -80,6 +82,7 @@ func cmdScan(args []string) {
 		Ports:       ports,
 		UdpPorts:    udpPorts,
 		PortScan:    portScan,
+		Deep:        deep,
 		Enrich:      !noEnrich,
 	}
 

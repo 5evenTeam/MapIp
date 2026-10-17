@@ -19,6 +19,7 @@ type Options struct {
 	Ports       []int
 	UdpPorts    []int
 	PortScan    bool
+	Deep        bool
 	Enrich      bool
 	PingFirst   bool
 }
@@ -117,7 +118,13 @@ func probeHost(ctx context.Context, ip string, opts Options) (model.Host, bool) 
 	}
 
 	if opts.PortScan {
-		ports := portscan.ScanViaNetBreak(ctx, ip, opts.Ports, opts.UdpPorts, opts.Timeout)
+		var ports []model.Port
+		if opts.Deep && portscan.DeepAvailable() {
+			ports = portscan.ScanDeep(ctx, ip, opts.Ports, opts.Timeout)
+		}
+		if ports == nil {
+			ports = portscan.ScanViaNetBreak(ctx, ip, opts.Ports, opts.UdpPorts, opts.Timeout)
+		}
 		if ports == nil {
 			ports = portscan.Scan(ctx, ip, portscan.Options{
 				Ports:       opts.Ports,
