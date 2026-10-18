@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-const version = "0.2.0"
+const version = "0.3.0"
 
 const disclaimer = "MapIp maps the hosts on your own network. It does not geolocate IP addresses."
 
@@ -50,7 +50,9 @@ Usage:
 Scan flags:
   -t, --targets SPEC   CIDR, range, list or hostname (default: local subnet)
   -p, --ports LIST     ports to scan when -ports is set
+      --udp-ports LIST UDP ports to scan via the NetBreak engine
       --port-scan      enable the TCP port scan
+      --deep           service/version detection via NetBreak
       --no-enrich      skip reverse DNS and MAC/vendor lookup
   -T, --timeout MS     per-probe timeout in milliseconds (default 1200)
   -o, --output FILE    write a report to FILE

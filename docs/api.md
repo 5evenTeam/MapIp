@@ -16,7 +16,11 @@ The token is also accepted as a `?token=` query parameter (used by the
 
 ### `GET /api/health`
 
-Returns `{ name, version, disclaimer, geolocation }`.
+Returns `name`, `version`, `disclaimer`, `geolocation` and a `capabilities`
+object (`deep` when Python+NetBreak is importable, `engine` when the
+`netbreak-engine` binary is found).
+
+`/api/health` does not require a token.
 
 ### `GET /api/interfaces`
 
@@ -30,11 +34,18 @@ Body:
 {
   "cidr": "192.168.1.0/24",
   "port_scan": true,
+  "deep": false,
   "enrich": true,
   "timeout_ms": 1500,
-  "ports": [80, 443, 22]
+  "ports": [80, 443, 22],
+  "udp_ports": [53, 123, 161]
 }
 ```
+
+`targets` may be used instead of `cidr`. `deep` enables NetBreak service/version
+detection and `udp_ports` adds UDP probes through the NetBreak engine; both are
+ignored gracefully when the NetBreak tooling is unavailable. Ports outside
+`1-65535` and duplicates are dropped.
 
 Returns `{ id, total, targets }`.
 

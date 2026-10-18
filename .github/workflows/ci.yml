@@ -41,18 +41,3 @@ jobs:
         with:
           name: mapip-windows
           path: mapip.exe
-
-  desktop:
-    name: Build desktop (renderer + main)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-      - uses: actions/setup-node@v6
-        with:
-          node-version: '24'
-      - name: Install
-        working-directory: desktop
-        run: npm ci
-      - name: Typecheck + build
-        working-directory: desktop
-        run: npm run build

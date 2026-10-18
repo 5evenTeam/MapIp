@@ -194,9 +194,12 @@ func guessServiceNB(port int, proto string) string {
 }
 
 func DeepAvailable() bool {
-	// check if python can import netbreak
 	cmd := exec.Command("python", "-c", "import netbreak")
 	return cmd.Run() == nil
+}
+
+func NetBreakAvailable() bool {
+	return findNetBreakEngine() != ""
 }
 
 func ScanDeep(ctx context.Context, ip string, ports []int, timeout time.Duration) []model.Port {

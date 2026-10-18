@@ -22,7 +22,7 @@ import (
 	"github.com/5evenTeam/mapip/internal/wol"
 )
 
-const Version = "0.1.0"
+const Version = "0.3.0"
 
 const Disclaimer = "MapIp maps the hosts on your own network. It does not geolocate IP addresses."
 
@@ -117,6 +117,10 @@ func (s *Server) health(w http.ResponseWriter, r *http.Request) {
 		"version":     Version,
 		"disclaimer":  Disclaimer,
 		"geolocation": false,
+		"capabilities": map[string]any{
+			"deep":   portscan.DeepAvailable(),
+			"engine": portscan.NetBreakAvailable(),
+		},
 	})
 }
 
@@ -134,7 +138,9 @@ type scanRequest struct {
 	Targets   []string `json:"targets"`
 	CIDR      string   `json:"cidr"`
 	Ports     []int    `json:"ports"`
+	UdpPorts  []int    `json:"udp_ports"`
 	PortScan  bool     `json:"port_scan"`
+	Deep      bool     `json:"deep"`
 	TimeoutMs int      `json:"timeout_ms"`
 	Enrich    bool     `json:"enrich"`
 }
@@ -164,7 +170,7 @@ func (s *Server) startScan(w http.ResponseWriter, r *http.Request) {
 	if timeout <= 0 {
 		timeout = 1200 * time.Millisecond
 	}
-	ports := req.Ports
+	ports := sanitizePorts(req.Ports)
 	if len(ports) == 0 {
 		ports = portscan.DefaultPorts()
 	}
@@ -189,7 +195,9 @@ func (s *Server) startScan(w http.ResponseWriter, r *http.Request) {
 		Timeout:     timeout,
 		Concurrency: 64,
 		Ports:       ports,
+		UdpPorts:    sanitizePorts(req.UdpPorts),
 		PortScan:    req.PortScan,
+		Deep:        req.Deep,
 		Enrich:      req.Enrich,
 	}
 
@@ -430,6 +438,25 @@ func (sc *Scan) broadcast(ev Event) {
 		default:
 		}
 	}
+}
+
+func sanitizePorts(in []int) []int {
+	if len(in) == 0 {
+		return nil
+	}
+	seen := map[int]struct{}{}
+	out := make([]int, 0, len(in))
+	for _, p := range in {
+		if p <= 0 || p > 65535 {
+			continue
+		}
+		if _, ok := seen[p]; ok {
+			continue
+		}
+		seen[p] = struct{}{}
+		out = append(out, p)
+	}
+	return out
 }
 
 func writeJSON(w http.ResponseWriter, code int, v any) {
