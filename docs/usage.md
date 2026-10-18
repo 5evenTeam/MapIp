@@ -53,6 +53,23 @@ mapip wol 00:11:22:33:44:55 [-b 255.255.255.255]
 
 List local interfaces, their addresses and the primary subnet.
 
+### `mapip remotemap <host|client|key>`
+
+Consent-based remote host access between machines you own. Full guide:
+[docs/remotemap.md](remotemap.md).
+
+```
+mapip remotemap host   [--addr HOST:PORT] [--key PASS | --key-file PATH]
+                       [--root DIR] [--allow-shell] [--allow CIDR,...]
+mapip remotemap client --host HOST [--port N] [--key PASS | --key-file PATH]
+                       <info|ping|list|get|exec|shell> [args]
+mapip remotemap key    [-o keyfile]
+```
+
+The host agent only runs when its owner starts it, logs every connection, reads
+only from `--root`, and refuses `exec` unless started with `--allow-shell`. All
+traffic is authenticated and encrypted with a pre-shared key.
+
 ### `mapip version`
 
 Print the version and the no-geolocation statement.

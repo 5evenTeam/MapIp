@@ -22,6 +22,8 @@ box.
 - **Continuous monitoring** — rescan and diff: new hosts, missing hosts,
   opened/closed ports, MAC and hostname changes.
 - **Wake-on-LAN** — send a magic packet to any discovered MAC.
+- **RemoteMap** — consent-based, encrypted remote host access between machines
+  you own (`mapip remotemap`). See [docs/remotemap.md](docs/remotemap.md).
 - **Export** — table, CSV, JSON, HTML report, Nmap-compatible XML.
 
 ## What it does not do
@@ -29,6 +31,7 @@ box.
 - It does not geolocate IP addresses.
 - It does not perform third-party IP lookups.
 - It does not send telemetry.
+- It does not install hidden agents, backdoors or persistence.
 - It does not scan networks you do not own or have written permission to scan.
 
 ## Install
@@ -59,6 +62,9 @@ mapip tui
 
 # wake a device
 mapip wol 00:11:22:33:44:55
+
+# RemoteMap: connect to a host you set up on another machine
+mapip remotemap client --host 192.168.1.40 --key-file ~/.mapip/remotemap/key.txt info
 ```
 
 ## TUI keys
@@ -80,11 +86,13 @@ mapip wol 00:11:22:33:44:55
 
 ```
 mapip  (Go, single static binary)
-   ├── mapip scan     CLI
-   └── mapip tui      terminal UI (bubbletea)
+   ├── mapip scan       CLI
+   ├── mapip tui        terminal UI (bubbletea)
+   ├── mapip serve      local REST + SSE API
+   └── mapip remotemap  host agent + client
 ```
 
-One binary, two interfaces. No runtime, no installer, no GUI.
+One binary, several interfaces. No runtime, no installer, no background service.
 
 ## Data and privacy
 
@@ -92,6 +100,9 @@ One binary, two interfaces. No runtime, no installer, no GUI.
   it to send to hosts on your own network. There is no telemetry, no update
   check, no analytics, no third-party IP-to-location lookup.
 - Scan history is stored locally in `~/.mapip/snapshots/` as JSON.
+- RemoteMap is off unless you start the host agent, listens only where you tell
+  it, and connects only to the client you run. There is no relay or cloud
+  service, and every session is logged by the host.
 - The IEEE OUI registry is embedded in the binary; no download is needed at
   runtime.
 

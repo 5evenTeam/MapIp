@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-const version = "0.3.0"
+const version = "0.4.0"
 
 const disclaimer = "MapIp maps the hosts on your own network. It does not geolocate IP addresses."
 
@@ -24,6 +24,8 @@ func main() {
 		cmdTUI(args[1:])
 	case "wol":
 		cmdWOL(args[1:])
+	case "remotemap", "rm":
+		cmdRemoteMap(args[1:])
 	case "interfaces", "ifaces":
 		cmdInterfaces(args[1:])
 	case "version", "--version", "-v":
@@ -45,6 +47,7 @@ Usage:
   mapip tui                     interactive terminal UI
   mapip serve [--addr HOST:PORT] start the local API for the desktop app
   mapip wol <mac>               send a wake-on-lan magic packet
+  mapip remotemap <host|client> RemoteMap: consent-based remote host access
   mapip interfaces              list local interfaces and the primary subnet
 
 Scan flags:

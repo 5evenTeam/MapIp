@@ -1,6 +1,22 @@
 # Changelog
 
-# Changelog
+## 0.4.0 — RemoteMap
+
+- **RemoteMap**: consent-based remote host access between machines you own,
+  added as `mapip remotemap host` (agent) and `mapip remotemap client`.
+- Authenticated and encrypted wire protocol: HMAC-SHA256 challenge/response,
+  HKDF-SHA256 key derivation and AES-256-GCM with per-direction keys.
+- Client operations: `info`, `ping`, `list`, `get`, `exec` (opt-in) and an
+  interactive `shell`.
+- File access is confined to a single `--root` directory; paths that escape it,
+  including via symlinks, are refused.
+- The host agent is visible and logs every connection, authentication and
+  operation. It is not a service and leaves nothing behind when stopped.
+- `exec` is off unless the host owner passes `--allow-shell`, and `--allow`
+  can restrict which client addresses may connect.
+- New `mapip remotemap key` helper to generate a key and print its fingerprint.
+- 12 new tests covering the handshake, wrong-key rejection, path confinement,
+  streamed downloads, the `--allow-shell` opt-in and the RFC 5869 HKDF vector.
 
 ## 0.3.0
 
