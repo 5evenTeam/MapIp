@@ -5,14 +5,19 @@ import (
 	"os"
 )
 
-const version = "0.4.0"
+const version = "0.5.0"
 
 const disclaimer = "MapIp maps the hosts on your own network. It does not geolocate IP addresses."
 
 func main() {
 	args := os.Args[1:]
 	if len(args) == 0 {
-		args = []string{"scan"}
+		if interactive() {
+			cmdTUI(nil)
+			return
+		}
+		usage()
+		return
 	}
 
 	switch args[0] {
@@ -37,14 +42,27 @@ func main() {
 	}
 }
 
+func interactive() bool {
+	return isTerminal(os.Stdin) && isTerminal(os.Stdout)
+}
+
+func isTerminal(f *os.File) bool {
+	info, err := f.Stat()
+	if err != nil {
+		return false
+	}
+	return info.Mode()&os.ModeCharDevice != 0
+}
+
 func usage() {
 	fmt.Printf(`mapip %s — network host mapper
 
 %s
 
 Usage:
+  mapip                         interactive terminal UI
+  mapip tui                     interactive terminal UI (aliases: ui)
   mapip scan [flags]            discover hosts and optionally scan ports
-  mapip tui                     interactive terminal UI
   mapip serve [--addr HOST:PORT] start the local API for the desktop app
   mapip wol <mac>               send a wake-on-lan magic packet
   mapip remotemap <host|client> RemoteMap: consent-based remote host access

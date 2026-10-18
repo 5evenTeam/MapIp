@@ -36,11 +36,26 @@ box.
 
 ## Install
 
+### Windows installer
+
+Download `MapIp-Setup-0.5.0.exe` from the
+[latest release](https://github.com/5evenTeam/MapIp/releases/latest) and run it.
+It installs `mapip.exe`, adds it to `PATH`, and gives you a Start Menu
+shortcut, so a new terminal can start the TUI by typing:
+
+```sh
+mapip
+```
+
+No administrator? `installer\install.ps1` does a per-user install into
+`%LOCALAPPDATA%\Programs\MapIp` with the same result. See
+[installer/README.md](installer/README.md).
+
 ### From source (Go 1.24+)
 
 ```sh
-git clone https://github.com/5evenTeam/mapip.git
-cd mapip
+git clone https://github.com/5evenTeam/MapIp.git
+cd MapIp
 go build -o mapip ./cmd/mapip
 ./mapip scan
 ```
@@ -48,6 +63,9 @@ go build -o mapip ./cmd/mapip
 ## Quick start
 
 ```sh
+# terminal UI (also starts when you run plain "mapip")
+mapip tui
+
 # scan the local subnet, auto-detected
 mapip scan
 
@@ -56,9 +74,6 @@ mapip scan -t 192.168.1.0/24 --port-scan
 
 # write a report
 mapip scan -t 10.0.0.1-10.0.0.50 --format xml -o hosts.xml
-
-# interactive TUI
-mapip tui
 
 # wake a device
 mapip wol 00:11:22:33:44:55
@@ -86,13 +101,15 @@ mapip remotemap client --host 192.168.1.40 --key-file ~/.mapip/remotemap/key.txt
 
 ```
 mapip  (Go, single static binary)
-   ├── mapip scan       CLI
+   ├── mapip            terminal UI (no arguments)
    ├── mapip tui        terminal UI (bubbletea)
+   ├── mapip scan       CLI
    ├── mapip serve      local REST + SSE API
    └── mapip remotemap  host agent + client
 ```
 
-One binary, several interfaces. No runtime, no installer, no background service.
+One binary, several interfaces. No runtime, no background service; the Windows
+installer only copies the binary and puts it on `PATH`.
 
 ## Data and privacy
 

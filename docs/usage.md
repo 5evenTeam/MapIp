@@ -2,6 +2,17 @@
 
 ## Commands
 
+### `mapip`
+
+With no arguments, MapIp starts the interactive terminal UI (the same as
+`mapip tui`). When stdin or stdout is not a terminal — a pipe, a service or a
+script — it prints the usage summary instead, so it never blocks.
+
+### `mapip tui`
+
+Interactive terminal UI. Same flags as `scan` for targets, ports, timeout and
+port scanning. Keys: `s` rescan, `↑`/`↓` scroll, `g` top, `q` quit.
+
 ### `mapip scan`
 
 Discover hosts and optionally scan ports.
@@ -24,11 +35,6 @@ Flags:
 | `--format FMT` | table | `table`, `json`, `csv`, `html`, `xml` |
 
 When no targets are given, MapIp detects the primary local subnet and scans it.
-
-### `mapip tui`
-
-Interactive terminal UI. Same flags as `scan` for targets, ports, timeout and
-port scanning. Keys: `s` rescan, `↑/↓` scroll, `g` top, `q` quit.
 
 ### `mapip serve`
 
@@ -81,6 +87,9 @@ Print the version and the no-geolocation statement.
 
 ## Notes
 
+- On Windows, `MapIp-Setup-<version>.exe` installs `mapip.exe`, adds it to
+  `PATH` and creates a Start Menu shortcut, so `mapip` starts the TUI from any
+  new terminal. A per-user install is available via `installer\install.ps1`.
 - MapIp does not geolocate IP addresses. It does not report country, city or
   ISP. It maps the hosts on your own network only.
 - Run scans only on networks you own or have written permission to test.

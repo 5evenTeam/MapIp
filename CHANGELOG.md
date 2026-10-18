@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.5.0
+
+- **Windows installer**: `MapIp-Setup-0.5.0.exe` installs `mapip.exe`, adds it
+  to the machine `PATH` and creates a Start Menu shortcut, so `mapip` starts
+  the terminal UI from any new terminal. A per-user install without
+  administrator rights is available via `installer\install.ps1`.
+- **Bare `mapip` opens the TUI**: running `mapip` with no arguments starts the
+  interactive terminal UI. In a non-interactive context (pipe, service, script)
+  it prints the usage summary instead, so it never blocks on a missing terminal.
+- New `installer\build.ps1` maintainer build (binary, checksums, Inno Setup
+  package) and `installer\README.md`.
+- Uninstall removes the shortcuts, the exact `PATH` entry it added and the
+  install directory.
+
 ## 0.4.0 — RemoteMap
 
 - **RemoteMap**: consent-based remote host access between machines you own,
